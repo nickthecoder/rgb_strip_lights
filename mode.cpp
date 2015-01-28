@@ -62,8 +62,20 @@ void SequenceMode::loop()
         save();
     }
 
+    if ( controller.pPreviousEaseInput->keyPressed() ) {
+        controller.previousEase();
+        dvalue( "Ease ", controller.easeIndex );
+        save();
+    }
+
     if ( controller.pSequenceInput->keyPressed() ) {
         controller.nextSequence();
+        dvalue( "Sequence ", controller.sequenceIndex );
+        save();
+    }
+    
+    if ( controller.pPreviousSequenceInput->keyPressed() ) {
+        controller.previousSequence();
         dvalue( "Sequence ", controller.sequenceIndex );
         save();
     }

@@ -12,7 +12,6 @@
 #include "remote.h"
 #include "buzzer.h"
 
-
 extern int getEaseCount();
 extern int getModeCount();
 
@@ -28,7 +27,9 @@ class Controller
     
     Input *pModeInput;
     Input *pSequenceInput;
+    Input *pPreviousSequenceInput;
     Input *pEaseInput;
+    Input *pPreviousEaseInput;
     
     Input *pEditInput;
     Input *pAddInput;
@@ -61,16 +62,18 @@ class Controller
 
     void setEase( int easeIndex );
     void nextEase();
+    void previousEase();
     Ease* getEase();
     
     void setSequence( int sequenceIndex );
     void nextSequence();
+    void previousSequence();
     
     byte getChannel( int channel );
     byte* getDialColor();
 
-    void tone( int frequency, long millis );
-    void toneIndex( int index, long millis );
+    void tone( int frequency, long millis = 100 );
+    void toneIndex( int index, long millis = 100 );
     
   private :
     void resetData();

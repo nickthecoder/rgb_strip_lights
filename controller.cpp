@@ -49,14 +49,16 @@ DualInput deleteInput = DualInput( &deleteButton, &deleteRemoteInput );
 Button sequenceButton = Button( SEQUENCE_PIN );
 RemoteInput sequenceRemoteInput = RemoteInput( REMOTE_JUMP7 );
 DualInput sequenceInput = DualInput( &sequenceButton, &sequenceRemoteInput );
+RemoteInput previousSequenceInput = RemoteInput( REMOTE_JUMP3 );
 
 Button modeButton = Button( MODE_PIN );
 RemoteInput modeRemoteInput = RemoteInput( REMOTE_FLASH ); 
 DualInput modeInput = DualInput( &modeButton, &modeRemoteInput );
 
 Button easeButton = Button( EASE_PIN );
-RemoteInput easeRemoteInput = RemoteInput( REMOTE_FLASH );
+RemoteInput easeRemoteInput = RemoteInput( REMOTE_FADE7 );
 DualInput easeInput = DualInput( &easeButton, &easeRemoteInput );
+RemoteInput previousEaseInput = RemoteInput( REMOTE_FADE3 );
 
 RemoteInput powerInput =  RemoteInput( REMOTE_POWER );
 
@@ -68,7 +70,9 @@ Controller::Controller()
 {
     pModeInput = &modeInput;
     pSequenceInput = &sequenceInput;
+    pPreviousSequenceInput = &previousSequenceInput;
     pEaseInput = &easeInput;
+    pPreviousEaseInput = &previousEaseInput;
     
     pAddInput = &addInput;
     pDeleteInput = &deleteInput;
@@ -236,6 +240,7 @@ void Controller::nextMode()
         modeIndex = 0;
     }
     setMode( modeIndex );
+    toneIndex( modeIndex );
     dvalue( "Mode ", modeIndex );
 }
 
@@ -256,6 +261,18 @@ void Controller::nextEase()
     if ( easeIndex >= EASE_COUNT ) {
         easeIndex = 0;
     }
+    toneIndex( easeIndex );
+    dvalue( "Ease ", easeIndex );
+
+}
+
+void Controller::previousEase()
+{
+    easeIndex --;
+    if ( easeIndex < 0 ) {
+        easeIndex = EASE_COUNT - 1;
+    }
+    toneIndex( easeIndex );
     dvalue( "Ease ", easeIndex );
 
 }
@@ -282,6 +299,21 @@ void Controller::nextSequence()
     setSequence( sequenceIndex );
 
     getMode()->begin();
+    toneIndex( sequenceIndex );
+    dvalue( "Sequence ", sequenceIndex );
+}
+
+
+void Controller::previousSequence()
+{
+    sequenceIndex --;
+    if ( sequenceIndex < 0 ) {
+        sequenceIndex = sequenceCount() - 1;
+    }
+    setSequence( sequenceIndex );
+
+    getMode()->begin();
+    toneIndex( sequenceIndex );
     dvalue( "Sequence ", sequenceIndex );
 }
 
@@ -310,16 +342,17 @@ byte Controller::getChannel( int c )
     return analogRead(rgbInPins[c]) / 4;
 }
 
-int toneScale[] = { TONE_C3, TONE_D4, TONE_E4, TONE_F4, TONE_G4, TONE_A5, TONE_B5 };
+int toneScale[] = { TONE_C3, TONE_D3, TONE_E3, TONE_F3, TONE_G3, TONE_A3, TONE_B3, TONE_C4, TONE_D4, TONE_E4, TONE_F4, TONE_G4, TONE_A4, TONE_B4, TONE_C5 };
 
 void Controller::toneIndex( int index, long millis )
 {
     if ( index < 0 ) {
         index = 0;
     }
-    if ( index > 6 ) {
-        index = 6;
+    if ( index > 14 ) {
+        index = 14;
     }
+    dvalue( "toneIndex ", index );
     tone( toneScale[index], millis );
 }
 
