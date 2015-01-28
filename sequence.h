@@ -7,6 +7,9 @@
 
 extern byte BLACK[];
 extern byte WHITE[];
+extern byte RED[];
+extern byte GREEN[];
+extern byte BLUE[];
 
 class Sequence
 {

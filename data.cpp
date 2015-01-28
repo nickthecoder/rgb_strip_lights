@@ -153,6 +153,22 @@ void moveDown( int index, int by )
 }
 
 
+void deleteSequence( int index )
+{
+    int location = getSequenceStart( index );
+    int seqLength = EEPROM.read( location );
+    
+    moveDown( index + 1, 1 + seqLength * 3 );
+    
+    for ( int s = index + 1; s < sequenceCount(); s ++ ) {
+        writeWord( L_SEQUENCE_TABLE + s * 2 - 2, readWord( L_SEQUENCE_TABLE + s * 2 ) );
+    }
+    
+    EEPROM.write( L_SEQUENCE_COUNT, EEPROM.read( L_SEQUENCE_COUNT ) -1 );
+
+    dump();
+}
+
 void saveSequence( int index, Sequence* pSequence )
 {
     int location =  getSequenceStart( index );
@@ -213,6 +229,7 @@ void dump( int from, int to )
     Serial.println();
     Serial.println();
 }
+
 
 void dump()
 {

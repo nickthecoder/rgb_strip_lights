@@ -14,6 +14,8 @@ void saveSequence( int index, Sequence* pSequence );
 
 void loadSequence( int index );
 
+void deleteSequence( int index );
+
 void dump();
 
 #endif

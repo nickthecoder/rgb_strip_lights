@@ -9,19 +9,15 @@
 
 void color(  byte* rgb )
 {
-    //dprintln( "Color " );
     controller.color( rgb );
 }
 
 void merge( byte* rgb1, byte* rgb2, float ratio )
 {
-    //dprint( "Merge " ); dprint( ratio ); dprint( " : " );
     for ( int c = 0; c < 3; c ++ ) {
         byte value = ratio * rgb1[c] + (1-ratio) * rgb2[c];
-        //dprint( value ); dprint( " " );
         controller.channel( c, value );
     }
-    //dprintln( "" );
 }  
 
 
@@ -73,7 +69,6 @@ void HeartBeat::display( float subTicks )
     
     int part = subTicks * length;
     float subSub = subTicks * length - part;
-    dvalue( "Part", part);
   
     if ( (part == 0) || (part == 2) ) {
         merge( getColor(), BLACK, subSub );
@@ -83,54 +78,17 @@ void HeartBeat::display( float subTicks )
         color( BLACK );
     }
 }
-/*
-Like Fadeeout, but uses the value on the dials
-*/
-void Dialout::display( float subTicks )
-{    
-    if ( subTicks < 0.5 ) {
-        merge( getColor(), controller.getDialColor(), EASE(subTicks * 2) );
-    } else {
-        merge( getColor(), controller.getDialColor(), EASE( (1 - subTicks) * 2 ) );
-    }
-}
 
-
-Multiple::Multiple( SequenceMode* pRepeatedMode, int times ) : SequenceMode()
-{
-    this->pRepeatedMode = pRepeatedMode;
-    this->times = times;
-}
-
-void Multiple::display( float subTicks )
-{
-    subTicks = subTicks * times;
-    int i = (int) subTicks;
-    subTicks = subTicks - i;
-
-    pRepeatedMode->display( subTicks );   
-}
-
-void Multiple::nextTick()
-{
-    SequenceMode::nextTick();
-    pRepeatedMode->nextTick();
-}
-
-FixedPeriod::FixedPeriod( long period )
-{
-    this->period = period;
-}
-
-void FixedPeriod::begin()
+void Periodic::begin()
 {
     SequenceMode::begin();
     lastTime = millis();
 }
 
-void FixedPeriod::display( float subTicks )
+void Periodic::display( float subTicks )
 {
     long now = millis();
+    float period = getPeriod();
     if (now > lastTime + period) {
         lastTime = now;
     }
@@ -139,23 +97,27 @@ void FixedPeriod::display( float subTicks )
     displaySubPeriod( controller.getEase()->ease( subPeriod ) );
 }
 
-Twinkle::Twinkle( long period ) : FixedPeriod( period )
+int Periodic::getPeriod()
 {
+    long potValue = (1024 - analogRead( TWINKLE_PIN ));
+    long value = 60 + (potValue);
+    return value;
+}
+
+Twinkle::Twinkle( byte* pColor )
+{
+    this->pColor = pColor;
 }
 
 void Twinkle::displaySubPeriod( float subPeriod )
 {
     if ( subPeriod < 0.5 ) {
-        merge( BLACK, getColor(), EASE( subPeriod * 2 ) );
+        merge( pColor, getColor(), EASE( subPeriod * 2 ) );
     } else {
-        merge( getColor(), BLACK, EASE( (subPeriod - 0.5) * 2) );
+        merge( getColor(), pColor, EASE( (subPeriod - 0.5) * 2) );
     }
 }
 
-
-Alternate::Alternate( long period ) : FixedPeriod( period )
-{
-}
 
 void Alternate::displaySubPeriod( float subPeriod )
 {
@@ -165,4 +127,15 @@ void Alternate::displaySubPeriod( float subPeriod )
         merge( getColor(), getPreviousColor(), EASE( (subPeriod - 0.5) * 2) );
     }
 }
+
+void StaticMode::display( float subPeriod )
+{
+    color( controller.getDialColor() );
+}
+
+void StayMode::display( float subPeriod )
+{
+}
+StayMode stayMode = StayMode();
+
 

@@ -42,14 +42,30 @@ class AddMode : public SpecialMode
 extern AddMode addMode;
 
 
-
-
 class DeleteMode : public SpecialMode
 {
   public :
     virtual void display( float subTicks );
 };
 extern DeleteMode deleteMode;
+
+
+
+class AddSequenceMode : public SpecialMode
+{
+  public :
+    virtual void display( float subTicks );
+};
+extern AddSequenceMode addSequenceMode;
+
+
+class DeleteSequenceMode : public SpecialMode
+{
+  public :
+    virtual void display( float subTicks );
+};
+extern DeleteSequenceMode deleteSequenceMode;
+
 
 
 #endif

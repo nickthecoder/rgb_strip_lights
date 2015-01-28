@@ -29,54 +29,50 @@ class HeartBeat : public SequenceMode
     virtual void display( float subTick );
 };
 
-class Dialout : public SequenceMode
-{
-  public :
-    virtual void display( float subTick );
-};
 
-class Multiple : public SequenceMode
-{
-  private :
-    int times;
-    SequenceMode* pRepeatedMode;
-    
-  public :
-    Multiple( SequenceMode *pRepeatedMode, int times );
-    virtual void nextTick();
-    virtual void display( float subTick );
-};
-
-class FixedPeriod : public SequenceMode
+class Periodic : public SequenceMode
 {
   public :
-    FixedPeriod( long period );
     virtual void begin();
     virtual void display( float subTick );
 
     virtual void displaySubPeriod( float subPeriod ) = 0;
+    virtual int getPeriod();
     
   private :
     long lastTime;
-    long period;
 };
 
-class Twinkle : public FixedPeriod
+class Twinkle : public Periodic
 {
   public :
-    Twinkle( long period );
+    Twinkle( byte* pColor );
+    
+    virtual void displaySubPeriod( float subPeriod );
+    
+  public :
+    byte* pColor;
+};
+
+class Alternate : public Periodic
+{
+  public :
     virtual void displaySubPeriod( float subPeriod );
     
 };
 
-class Alternate : public FixedPeriod
+class StaticMode : public SequenceMode
 {
   public :
-    Alternate( long period );
-    virtual void displaySubPeriod( float subPeriod );
-    
+    virtual void display( float subTick );
 };
 
 
+class StayMode : public SequenceMode
+{
+  public :
+    virtual void display( float subTick );
+};
+extern StayMode stayMode;
 
 #endif

@@ -3,6 +3,10 @@
 
 #define DEBOUNCE_MILLIS 50
 
+int Button::tonePin = 5;
+int Button::toneDuration = 100;
+int Button::toneFrequency = 440;
+
 Button::Button( int pin )
 {
     this->pin = pin;
@@ -42,7 +46,8 @@ boolean Button::isDown()
             dprint( "Changed: " ); dprint( pin ); dprint( " : " ); dprintln( reading );
         }
     }
-    
+
+     
     // Remember the current reading for the next time this function is called.
     previousReading = reading;
     

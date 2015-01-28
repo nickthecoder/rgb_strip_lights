@@ -3,6 +3,9 @@
 
 extern byte BLACK[] = { 0,0,0 };
 extern byte WHITE[] = { 255,255,255 };
+extern byte RED[] = { 255,0,0 };
+extern byte GREEN[] = { 0,255,0 };
+extern byte BLUE[] = { 0,0,255 };
 
 
 Sequence::Sequence()

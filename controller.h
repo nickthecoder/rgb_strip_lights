@@ -9,7 +9,7 @@
 #include "mode.h"
 #include "standardModes.h"
 #include "data.h"
-
+#include "remote.h"
 
 
 extern int getEaseCount();
@@ -21,7 +21,8 @@ class Controller
     int modeIndex;
     int easeIndex;
     int sequenceIndex;
-    
+    Mode* pMode;
+
     Sequence sequence;
     
     Button modeButton;
@@ -31,10 +32,9 @@ class Controller
     Button editButton;
     Button addButton;
     Button deleteButton;
-
-  private :
-    Mode* pMode;
     
+    Remote remote;
+
   public :
     Controller();
 
@@ -70,7 +70,7 @@ class Controller
 
 extern Controller controller;
 
-
+extern StaticMode staticMode;
 
 #endif
 

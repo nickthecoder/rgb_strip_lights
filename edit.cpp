@@ -156,4 +156,69 @@ void DeleteMode::display( float subTick )
 }
 
 
+AddSequenceMode addSequenceMode = AddSequenceMode();
+
+void AddSequenceMode::display( float subTick )
+{
+    digitalWrite( EDIT_LED_PIN, ( ((int) (subTick * 4)) % 2 == 0) ? HIGH : LOW ); // Double Flash
+
+    controller.color( controller.getDialColor() );
+
+    if ( controller.modeButton.keyPressed() ) {
+        controller.setMode( controller.modeIndex );
+        dprintln( "Back" );
+    }
+    
+    if ( controller.addButton.keyPressed() ) {
+        controller.sequence.clear();
+        controller.sequence.append( controller.getDialColor() );
+        saveSequence( sequenceCount(), &controller.sequence );
+        dprintln( "Saved" );
+        
+        browseMode.begin();
+        controller.setMode( &browseMode );
+    }
+}
+
+
+
+DeleteSequenceMode deleteSequenceMode = DeleteSequenceMode();
+
+void DeleteSequenceMode::display( float subTick )
+{
+    digitalWrite( EDIT_LED_PIN, ( ((int) (subTick * 6)) % 2 == 0) ? HIGH : LOW ); // Triple Flash
+
+    if ( subTick < 0.5 ) {
+      int part = subTick*8;
+      if ( (part == 1) || (part == 3) ) {
+          controller.color( 255,0,0 );
+      } else {
+          controller.color( 0,0,0 );
+      }
+    } else {
+
+        int part = (subTick - 0.5) * controller.sequence.length;
+        controller.color( controller.sequence.colors[part] );
+
+    }
+
+    if ( controller.modeButton.keyPressed() ) {
+        controller.setMode( controller.modeIndex );
+        dprintln( "Back" );
+    }
+    
+    if ( controller.deleteButton.keyPressed() ) {
+        deleteSequence( controller.sequenceIndex );
+        if ( controller.sequenceIndex >= sequenceCount() ) {
+            controller.setSequence( 0 );
+        } else {
+            controller.setSequence( controller.sequenceIndex );
+        }
+        
+        digitalWrite( EDIT_LED_PIN, LOW ); // Edit LED off
+        controller.setMode( controller.modeIndex );
+    }
+}
+
+
 

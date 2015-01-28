@@ -21,6 +21,11 @@ class Button {
     // Usd to de-bounce the button
     boolean previousReading; // The previous raw reading from digitalRead
     long stableTime;      // The time in millis when the button was last stable i.e. not fluctuating caused by button "bounce"
+    
+  public :
+    static int tonePin;
+    static int toneDuration;
+    static int toneFrequency;
 };
 
 

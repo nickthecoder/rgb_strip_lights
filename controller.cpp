@@ -12,18 +12,16 @@ Fade fade = Fade();
 Fadeout fadeout = Fadeout();
 HeartBeat heartBeat = HeartBeat();
 Whiteout whiteout = Whiteout();
-Multiple doubleFadeout = Multiple( &fadeout, 2 );
-Multiple quadFadeout = Multiple( &fadeout, 4 );
-Multiple doubleWhiteout = Multiple( &whiteout, 2 );
-Multiple quadWhiteout = Multiple( &whiteout, 4 );
-Twinkle twinkle = Twinkle( 70 );
-Twinkle slowTwinkle = Twinkle( 200 );
-Alternate alternate = Alternate( 100 );
-Alternate slowAlternate = Alternate( 300 );
-Dialout dialout = Dialout();
+Twinkle twinkle = Twinkle( BLACK );
+Twinkle whiteTwinkle = Twinkle( WHITE );
+Twinkle redTwinkle = Twinkle( RED );
+Twinkle greenTwinkle = Twinkle( GREEN );
+Twinkle blueTwinkle = Twinkle(  BLUE );
+Alternate alternate = Alternate();
+StaticMode staticMode = StaticMode();
 
-#define MODE_COUNT 13
-Mode* pModes[MODE_COUNT] = { &fade, &fadeout, &heartBeat, &whiteout, &doubleFadeout, &quadFadeout, &doubleWhiteout, &quadWhiteout, &twinkle, &slowTwinkle, &alternate, &slowAlternate, &dialout };
+#define MODE_COUNT 11
+Mode* pModes[MODE_COUNT] = { &fade, &heartBeat, &fadeout, &whiteout, &twinkle, &whiteTwinkle, &redTwinkle, &greenTwinkle, &blueTwinkle, &alternate, &staticMode };
 int getModeCount() {
     return MODE_COUNT;
 }
@@ -45,6 +43,8 @@ Controller::Controller()
     , editButton( Button( EDIT_PIN ) )
     , addButton( Button( ADD_PIN ) )
     , deleteButton( Button( DELETE_PIN ) )
+    
+    , remote( Remote( REMOTE_PIN ) )
 {
 
     modeIndex = 0;
@@ -62,13 +62,11 @@ void Controller::setup()
     pinMode( GREEN_OUT_PIN, OUTPUT );
     pinMode( BLUE_OUT_PIN, OUTPUT );
     
+    remote.setup();
+    
+    // pinMode( BUZZER_PIN, OUTPUT );
+    
     color( 5, 1, 0 ); // Amber... On your marks...
-
-    //#ifdef DEBUG
-    Serial.begin( 9600 );
-    //#endif
-
-    dprintln( "Setup" );
 
     setMode( 0 );
 
@@ -159,15 +157,15 @@ void Controller::loop()
 void Controller::color( byte* rgb )
 {
     for ( int c = 0; c < 3; c ++ ) {
-        analogWrite( rgbPins[c], 255 - rgb[c] );
+        channel( c, rgb[c] );
     }
 }
 
 void Controller::color( byte red, byte green, byte blue )
 {
-    analogWrite( RED_OUT_PIN, 255 - red );
-    analogWrite( GREEN_OUT_PIN, 255 - green );
-    analogWrite( BLUE_OUT_PIN, 255 - blue );
+    channel( 0, red );
+    channel( 1, green );
+    channel( 2, blue );
 }
 
 void Controller::channel( int channel, byte value )
@@ -229,35 +227,29 @@ void Controller::setSequence( int index )
 {
     sequenceIndex = index;
     
-    // There is a special sequence at the end, which always displays whatever colour is on the RGB dials.
-    // Make a dummy sequence for it, (not loaded or saved to EEPROM).
-    
-    if (sequenceIndex == sequenceCount() ) {
-        sequence.clear().a( 255, 255, 255 );
-    } else {
-        loadSequence( sequenceIndex );
-    }
+    loadSequence( sequenceIndex );
 }
 
 void Controller::nextSequence()
 {
     sequenceIndex ++;
-    if ( sequenceIndex > sequenceCount() ) {
+    if ( sequenceIndex >= sequenceCount() ) {
         sequenceIndex = 0;
     }
     setSequence( sequenceIndex );
-    
+
     getMode()->begin();
     dvalue( "Sequence ", sequenceIndex );
-
 }
 
 
 
 long Controller::getTickDuration()
 {
-    long potValue = analogRead( SPEED_PIN );
-    return (potValue + 100) * potValue / 50;
+    long potValue = 1024 - analogRead( SPEED_PIN );
+    long value = 100 + (potValue * potValue) / 50;
+    //dvalue( "Duration ", value );
+    return value;
 }
 
 byte tempColor[3];

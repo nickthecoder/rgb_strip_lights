@@ -8,13 +8,8 @@
  * A controller for RGB LED strips.
  * Lights LEDs in funky patterns using PWM to choose the RGB values.
  * There are many "modes", each mode displays a different pattern of lights.
- * The simplest mode is static white
- * Then there are predefined patterns, such as "jump3", which show, red, green and then blue.
- * There are also used defined sequences, where you can choose which colours to display.
  *
  * See the "MODES" section below for the list of all the modes. 
- *
- * The speed of the pattern can be changed using a potentiometer (not yet implemented).
  *
  * USER GUIDE
  * ==========
@@ -22,7 +17,7 @@
  * Press the SEQUENCE button, to move to the next pattern of colours (will cycle back to the start when you reach the end)
  * Press the MODE button, to change mode (will cycle back to the start when you reach the end)
  *
- * Turn the speed dial at any time to change the rate of flashing. (not yet implemented)
+ * Turn the speed dial at any time to change the rate of flashing.
  *
  * To change a colour within a sequence begin by pressing the "Edit" button.
  *   The LEDs will stop, and show you just a single colour within the sequence.
@@ -31,7 +26,7 @@
  *     The LEDs will change to the colour specified by the RGB dials (the potentiometers)
  *     Turn the RGB dials till you get the desired colour
  *   Press "EDIT" again to save this colour.
- *   You can press the "MODE" button at any time to end editting.
+ *   You can press the "MODE" button at any time to end editing.
  *
  * To add a new colour into a sequence begin by pressing the "Edit" button.
  *   The LEDs will stop, and show you just a single colour within the sequence.
@@ -40,7 +35,7 @@
  *   Press the "ADD" button.
  *     The LEDs will change to the colour specified by the RGB dials (the potentiometers)
  *     Turn the RGB dials till you get the desired colour
- *   Press "ADD" (or "EDIT") to save this new colour.
+ *   Press "ADD" to save this new colour.
  *   You can press the "MODE" button at any time to end editting.
  * 
  * To delete a colour from a sequence, begin by pressing the "EDIT" button
@@ -49,20 +44,77 @@
  *   Press the "DELETE" button
  *   The LEDs will flash RED and the colour that will be deleted.
  *   Press the "DELETE" button again to delete the colour.
- *   You can press the "MODE" button at any time to end editting.
- * 
+ *   Or press the "MODE" button to cancel.
+ *
+ * To add a new SEQUENCE of colours, begin by pressing the "ADD" button
+ *    The LEDs will stop, and show you just a single colour.
+ *    Turn the RGB dials till you get the desired colour
+ *    Press the "ADD" button again, or "MODE" to cancel
+ *     
+ *    You have now created a sequence containg just a single colour.
+ *    If you want to add more colours to the sequence, follow the instructions for adding colours (see above)
+ *    
+ * To delete a SEQUENCE, begin by pressing the "DELETE" button.
+ *   The lights will flash crazy, mostly red, but also all the colours in the sequence you are about to delete
+ *   Press the "DELETE" button again to confirm,
+ *   Or press "MODE" button to cancel.
+ *
  */
+
 #include <EEPROM.h>
 #include "debug.h"
 #include "controller.h"
 
 void setup()
 {
+    Serial.begin( 9600 );
+    Serial.println( "Setup" );  
+
     controller.setup();
+
+    dprintln( "setting up remote" );
+    controller.remote.setup();
+    dprintln( "set up remote" );
 }
 
 void loop()
 {
     controller.loop();
+    controller.remote.checkButtons();
 }
+
+/*
+Planned Improvements
+
+Use more of the remote control buttons.
+  Pick buttons for next sequence, next mode, next ease (red up, green up, blue up)
+    Maybe also previous sequence, previous mode and previous ease (red down, green down, blue down)
+    
+  DIY 1 : Edit
+  DIY 2 : Add
+  DIY 3 : Delete???
+  
+  Put back the IR repeat feature, and use it for brightness controls.
+  
+  Power button resets the sequence, mode and ease to 0
+  
+  Quick/Slow buttons
+    Use "Waggle" code and a toggle so that EITHER the dial or a variable is used for the actual speed.
+    
+Demo mode - picks a random sequence, mode and ease every N seconds.
+  "Auto" button on the remote.
+
+StayMode detect waggle on RGB dials and switch to StaticMode
+
+OLED display showing :
+  Mode name
+  Ease name
+  Sequence Number
+  
+Use mux/demux to allow the controls to connect to the main box via a cable (cat5 / USB cable)
+  GND, +5V, 3 pots = 5.
+  3 more if I use a cat5 cable to read 6 button states.
+  That doesn't include the OLED display though.
+  GND, +5, 2 for the display, leaves 4 to mux the pots and buttons.
+*/
 
