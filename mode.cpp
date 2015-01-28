@@ -99,7 +99,16 @@ void SequenceMode::loop()
     long button = controller.remote.getButton();
 
     if ( button == REMOTE_POWER) {
-        controller.showColor( 0x050000 );
+        // Reset the state, so if you get lost, Turn it off and on again ;-)
+        if ( controller.pMode == &offMode ) {
+            controller.beep();
+            controller.setMode( 0 );
+            controller.setSequence( 0 );
+            controller.setEase( 0 );
+        } else {
+            controller.showColor( 0x050000 );
+            controller.setMode( &offMode );
+        }        
 
     } else if ( button == REMOTE_PAUSE) {
         if ( controller.pMode == &stayMode ) {
@@ -176,5 +185,24 @@ long SequenceMode::getTickDuration()
     return controller.getTickDuration();
 }
 
+
+OffMode offMode = OffMode();
+
+void OffMode::loop()
+{
+    if ( controller.pCancelInput->keyPressed() ) {
+        controller.setMode( controller.modeIndex );        
+    }
+}
+void OffMode::display(float)
+{
+}
+long OffMode::getTickDuration()
+{
+    return 100;
+}
+void OffMode::nextTick()
+{
+}
 
 

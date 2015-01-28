@@ -374,3 +374,8 @@ void Controller::tone( int frequency, long millis )
     }
 }
 
+void Controller::beep()
+{
+    tone( TONE_C6, 50 );
+}
+

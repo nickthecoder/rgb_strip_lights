@@ -74,6 +74,7 @@ class Controller
 
     void tone( int frequency, long millis = 100 );
     void toneIndex( int index, long millis = 100 );
+    void beep();
     
   private :
     void resetData();

@@ -38,6 +38,16 @@ class SequenceMode : public Mode
 
 };
 
+class OffMode : public Mode
+{
+  public :
+    virtual void loop();
+    virtual void display(float);
+    virtual long getTickDuration();
+    virtual void nextTick();
+};
+extern OffMode offMode;
+    
 
 #endif
 
