@@ -11,6 +11,7 @@
 #include "data.h"
 #include "remote.h"
 #include "buzzer.h"
+#include "waggle.h"
 
 extern int getEaseCount();
 extern int getModeCount();
@@ -38,6 +39,8 @@ class Controller
     
     Remote remote;
 
+    float brightness; // (0..1);
+
   public :
     Controller();
 
@@ -45,6 +48,8 @@ class Controller
     
     void setup();
     void loop();
+    
+    void reset();
     
     void showColor( long colorVal );
     
@@ -54,6 +59,8 @@ class Controller
     void channel( int channel, byte value );
 
     long getTickDuration();
+    void speedUp();
+    void slowDown();
 
     void setMode( int modeIndex );
     void setMode( Mode* pMode );
@@ -78,6 +85,8 @@ class Controller
     
   private :
     void resetData();
+    long speed;
+    
 };
 
 extern Controller controller;

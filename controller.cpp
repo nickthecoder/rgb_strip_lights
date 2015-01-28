@@ -82,6 +82,9 @@ Controller::Controller()
     modeIndex = 0;
     easeIndex = 0; //EASE_COUNT - 1;
     sequenceIndex = 0;
+    brightness = 1;
+
+    speed = 10;
 
     sequence.a( 255,255,255 );
 }
@@ -117,6 +120,16 @@ void Controller::setup()
 
     color( 0, 5, 0 ); // Green... Go.
 
+}
+
+
+void Controller::reset()
+{
+    controller.beep();
+    controller.speed = 10;
+    controller.setMode( 0 );
+    controller.setSequence( 0 );
+    controller.setEase( 0 );
 }
     
 void Controller::resetData()
@@ -165,12 +178,9 @@ void Controller::resetData()
         sequence.a( 0,0,i );
     }
     saveSequence( 7, &sequence );
-    
-    sequence.clear().a( 0,0,0 );
-    saveSequence( 8, &sequence );
- 
+     
     sequence.clear().a( 255,255,255 );
-    saveSequence( 9, &sequence );
+    saveSequence( 8, &sequence );
 
     setSequence( 0 );
 
@@ -179,6 +189,30 @@ void Controller::resetData()
 
 void Controller::loop()
 {
+    long button = controller.remote.getButton();
+    if ( button == REMOTE_BRIGHTNESS_UP ) {
+        brightness += 0.1;
+        if ( brightness > 1 ) {
+            brightness = 1;
+        }
+        toneIndex( brightness * 10 );
+    }
+    if ( button == REMOTE_BRIGHTNESS_DOWN ) {
+        brightness -= 0.1;
+        if ( brightness < 0 ) {
+            brightness = 0;
+        }
+        toneIndex( brightness * 10 );
+    }
+    
+    if ( button == REMOTE_QUICK ) {
+        speedUp();
+    }
+    
+    if ( button == REMOTE_SLOW ) {
+        slowDown();
+    }
+
     remote.loop();
     if (sequenceIndex == sequenceCount() ) {
         sequence.clear().append( getDialColor() );
@@ -217,7 +251,7 @@ void Controller::color( byte red, byte green, byte blue )
 
 void Controller::channel( int channel, byte value )
 {
-    analogWrite( rgbPins[channel], 255 - value );
+    analogWrite( rgbPins[channel], 255 - (int) (brightness * (float) value) );
 }
 
 
@@ -317,14 +351,45 @@ void Controller::previousSequence()
     dvalue( "Sequence ", sequenceIndex );
 }
 
-
+Waggle speedWaggle = Waggle( SPEED_PIN );
 
 long Controller::getTickDuration()
 {
-    long potValue = 1024 - analogRead( SPEED_PIN );
-    long value = 100 + (potValue * potValue) / 50;
-    //dvalue( "Duration ", value );
-    return value;
+    if ( speed <= 0 ) {
+        long potValue = 1024 - analogRead( SPEED_PIN );
+        long value = 100 + (potValue * potValue) / 50;
+        //dvalue( "Duration ", value );
+        return value;
+    } else {
+        if ( speedWaggle.isWaggled() ) {
+            speed = -1;
+            return getTickDuration();
+        }
+        return speed * speed * 10;
+    }
+}
+
+void Controller::slowDown()
+{
+    if ( speed <= 0 ) {
+        speed = pow( getTickDuration(), 0.5 );
+    }
+    
+    speed += 1;
+    toneIndex( 15 -(speed % 15) );    
+}
+
+void Controller::speedUp()
+{
+    if ( speed <= 0 ) {
+        speed = pow( getTickDuration(), 0.5 );
+    }
+
+    speed -= 1;
+    if ( speed < 1 ) {
+        speed = 1;
+    }
+    toneIndex( 15 - (speed % 15) ); 
 }
 
 byte tempColor[3];

@@ -29,54 +29,9 @@
 
 volatile irparams_t irparams;
 
-// These versions of MATCH, MATCH_MARK, and MATCH_SPACE are only for debugging.
-// To use them, set DEBUG in IRremoteInt.h
-// Normally macros are used for efficiency
-#ifdef DEBUG
-int MATCH(int measured, int desired) {
-  Serial.print("Testing: ");
-  Serial.print(TICKS_LOW(desired), DEC);
-  Serial.print(" <= ");
-  Serial.print(measured, DEC);
-  Serial.print(" <= ");
-  Serial.println(TICKS_HIGH(desired), DEC);
-  return measured >= TICKS_LOW(desired) && measured <= TICKS_HIGH(desired);
-}
-
-int MATCH_MARK(int measured_ticks, int desired_us) {
-  Serial.print("Testing mark ");
-  Serial.print(measured_ticks * USECPERTICK, DEC);
-  Serial.print(" vs ");
-  Serial.print(desired_us, DEC);
-  Serial.print(": ");
-  Serial.print(TICKS_LOW(desired_us + MARK_EXCESS), DEC);
-  Serial.print(" <= ");
-  Serial.print(measured_ticks, DEC);
-  Serial.print(" <= ");
-  Serial.println(TICKS_HIGH(desired_us + MARK_EXCESS), DEC);
-  return measured_ticks >= TICKS_LOW(desired_us + MARK_EXCESS) && measured_ticks <= TICKS_HIGH(desired_us + MARK_EXCESS);
-}
-
-int MATCH_SPACE(int measured_ticks, int desired_us) {
-  Serial.print("Testing space ");
-  Serial.print(measured_ticks * USECPERTICK, DEC);
-  Serial.print(" vs ");
-  Serial.print(desired_us, DEC);
-  Serial.print(": ");
-  Serial.print(TICKS_LOW(desired_us - MARK_EXCESS), DEC);
-  Serial.print(" <= ");
-  Serial.print(measured_ticks, DEC);
-  Serial.print(" <= ");
-  Serial.println(TICKS_HIGH(desired_us - MARK_EXCESS), DEC);
-  return measured_ticks >= TICKS_LOW(desired_us - MARK_EXCESS) && measured_ticks <= TICKS_HIGH(desired_us - MARK_EXCESS);
-}
-#else
 int MATCH(int measured, int desired) {return measured >= TICKS_LOW(desired) && measured <= TICKS_HIGH(desired);}
 int MATCH_MARK(int measured_ticks, int desired_us) {return MATCH(measured_ticks, (desired_us + MARK_EXCESS));}
 int MATCH_SPACE(int measured_ticks, int desired_us) {return MATCH(measured_ticks, (desired_us - MARK_EXCESS));}
-// Debugging versions are in IRremote.cpp
-#endif
-
 
 IRrecv::IRrecv(int recvpin)
 {
@@ -206,9 +161,6 @@ boolean IRrecv::decode(decode_results *results) {
   if (irparams.rcvstate != STATE_STOP) {
     return ERR;
   }
-#ifdef DEBUG
-  Serial.println("Attempting NEC decode");
-#endif
   if (decodeNEC(results)) {
     return DECODED;
   }
@@ -220,33 +172,18 @@ boolean IRrecv::decode(decode_results *results) {
 
 // NECs have a repeat only 4 items long
 long IRrecv::decodeNEC(decode_results *results) {
-  Serial.println( "NEC" );
   long data = 0; // The result is built up bit by bit into shifted left after each bit.
   
   // Initial mark
   if (!MATCH_MARK(results->rawbuf[1], NEC_HDR_MARK)) {
-    Serial.println( "ERR A" );
-    Serial.println( results->rawbuf[1] * 50 );
     return ERR;
   }
-  // Check for repeat
-  /*
-  if (irparams.rawlen == 4 &&
-    MATCH_SPACE(results->rawbuf[offset], NEC_RPT_SPACE) &&
-    MATCH_MARK(results->rawbuf[offset+1], NEC_BIT_MARK)) {
-    results->bits = 0;
-    results->value = REPEAT;
-    results->decode_type = NEC;
-    return DECODED;
-  }
-  */
+
   if (irparams.rawlen < 2 * NEC_BITS + 4) {
-    Serial.println( "ERR B" );
     return ERR;
   }
   // Initial space  
   if (!MATCH_SPACE(results->rawbuf[2], NEC_HDR_SPACE)) {
-    Serial.println( "ERR C" );
     return ERR;
   }
   
@@ -260,7 +197,6 @@ long IRrecv::decodeNEC(decode_results *results) {
     
     value = cache[i];
     if (!MATCH_MARK(value, NEC_BIT_MARK)) {
-      Serial.println( "ERR D" );
       return ERR;
     }
 
@@ -274,7 +210,6 @@ long IRrecv::decodeNEC(decode_results *results) {
       data <<= 1;
     } 
     else {
-      Serial.println( "ERR E" );
       return ERR;
     }
   }
