@@ -10,6 +10,7 @@
 #include "standardModes.h"
 #include "data.h"
 #include "remote.h"
+#include "buzzer.h"
 
 
 extern int getEaseCount();
@@ -25,13 +26,14 @@ class Controller
 
     Sequence sequence;
     
-    Button modeButton;
-    Button sequenceButton;
-    Button easeButton;
+    Input *pModeInput;
+    Input *pSequenceInput;
+    Input *pEaseInput;
     
-    Button editButton;
-    Button addButton;
-    Button deleteButton;
+    Input *pEditInput;
+    Input *pAddInput;
+    Input *pDeleteInput;
+    Input *pCancelInput;
     
     Remote remote;
 
@@ -43,6 +45,9 @@ class Controller
     void setup();
     void loop();
     
+    void showColor( long colorVal );
+    
+    void color( long colorVal );
     void color( byte red, byte green, byte blue );
     void color( byte* rgb );
     void channel( int channel, byte value );
@@ -64,6 +69,9 @@ class Controller
     byte getChannel( int channel );
     byte* getDialColor();
 
+    void tone( int frequency, long millis );
+    void toneIndex( int index, long millis );
+    
   private :
     void resetData();
 };

@@ -21,7 +21,8 @@ Sequence& Sequence::clear()
 
 Sequence& Sequence::a( byte r, byte g, byte b )
 {
-    append( (byte[]) { r, g, b } );
+    byte color[] = {r, g, b};
+    append( color );
     return *this;
 }
 

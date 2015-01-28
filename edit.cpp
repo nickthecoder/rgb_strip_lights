@@ -41,12 +41,12 @@ void BrowseMode::display( float subTick )
     digitalWrite( EDIT_LED_PIN, HIGH );
     
     // MODE BUTTTON (exit browse, back to normal)
-    if ( controller.modeButton.keyPressed() ) {
+    if ( controller.pCancelInput->keyPressed() ) {
         end();
     }
     
     // SEQUENCE BUTTON (Next Colour)
-    if ( controller.sequenceButton.keyPressed() ) {
+    if ( controller.pSequenceInput->keyPressed() ) {
         colorIndex ++;
         if ( colorIndex == controller.sequence.length ) {
             colorIndex = 0;
@@ -55,19 +55,19 @@ void BrowseMode::display( float subTick )
     }
     
     // EDIT BUTTON (edit the current colour with the dials)
-    if ( controller.editButton.keyPressed() ) {
+    if ( controller.pEditInput->keyPressed() ) {
         controller.setMode( &editMode );
         dprintln( "Edit" );
     }
     
     // ADD BUTTON (add a new colour with the dials)
-    if ( controller.addButton.keyPressed() ) {
+    if ( controller.pAddInput->keyPressed() ) {
         controller.setMode( &addMode );
         dprintln( "Add" );
     }
     
     // DELETE BUTTON
-    if ( controller.deleteButton.keyPressed() ) {
+    if ( controller.pDeleteInput->keyPressed() ) {
         if ( controller.sequence.length > 1 ) {
             controller.setMode( &deleteMode );
             dprintln( "Delete" );
@@ -87,12 +87,12 @@ void EditMode::display( float subTick )
 
     controller.color( controller.getDialColor() );
 
-    if ( controller.modeButton.keyPressed() ) {
+    if ( controller.pCancelInput->keyPressed() ) {
         controller.setMode( &browseMode );
         dprintln( "Back" );
     }
     
-    if ( controller.editButton.keyPressed() ) {
+    if ( controller.pEditInput->keyPressed() ) {
         controller.sequence.setColor( browseMode.colorIndex, controller.getDialColor() );
         saveSequence( controller.sequenceIndex, &controller.sequence );
         dprintln( "Saved" );
@@ -110,12 +110,12 @@ void AddMode::display( float subTick )
 
     controller.color( controller.getDialColor() );
 
-    if ( controller.modeButton.keyPressed() ) {
+    if ( controller.pCancelInput->keyPressed() ) {
         controller.setMode( &browseMode );
         dprintln( "Back" );
     }
     
-    if ( controller.addButton.keyPressed() ) {
+    if ( controller.pAddInput->keyPressed() ) {
         controller.sequence.add( browseMode.colorIndex, controller.getDialColor() );
         saveSequence( controller.sequenceIndex, &controller.sequence );
         dprintln( "Saved" );
@@ -131,19 +131,19 @@ void DeleteMode::display( float subTick )
 {
     digitalWrite( EDIT_LED_PIN, ( ((int) (subTick * 6)) % 2 == 0) ? HIGH : LOW ); // Triple Flash
 
-    int part = subTick*10;
-    if ( (part == 1) || (part == 8) ) {
-        controller.color( 255,0,0 );
-    } else {
-        controller.color( controller.sequence.colors[browseMode.colorIndex] );
+    if ( subTick < 0.5 ) {
+      controller.tone( TONE_C6, 5 );
     }
 
-    if ( controller.modeButton.keyPressed() ) {
+    int part = subTick*10;
+    controller.color( controller.sequence.colors[browseMode.colorIndex] );
+
+    if ( controller.pCancelInput->keyPressed() ) {
         controller.setMode( &browseMode );
         dprintln( "Back" );
     }
     
-    if ( controller.deleteButton.keyPressed() ) {
+    if ( controller.pDeleteInput->keyPressed() ) {
         controller.sequence.deleteColor( browseMode.colorIndex );
         if ( browseMode.colorIndex >= controller.sequence.length ) {
             browseMode.colorIndex = 0;
@@ -164,12 +164,12 @@ void AddSequenceMode::display( float subTick )
 
     controller.color( controller.getDialColor() );
 
-    if ( controller.modeButton.keyPressed() ) {
+    if ( controller.pCancelInput->keyPressed() ) {
         controller.setMode( controller.modeIndex );
         dprintln( "Back" );
     }
     
-    if ( controller.addButton.keyPressed() ) {
+    if ( controller.pAddInput->keyPressed() ) {
         controller.sequence.clear();
         controller.sequence.append( controller.getDialColor() );
         saveSequence( sequenceCount(), &controller.sequence );
@@ -178,6 +178,7 @@ void AddSequenceMode::display( float subTick )
         browseMode.begin();
         controller.setMode( &browseMode );
     }
+
 }
 
 
@@ -189,25 +190,17 @@ void DeleteSequenceMode::display( float subTick )
     digitalWrite( EDIT_LED_PIN, ( ((int) (subTick * 6)) % 2 == 0) ? HIGH : LOW ); // Triple Flash
 
     if ( subTick < 0.5 ) {
-      int part = subTick*8;
-      if ( (part == 1) || (part == 3) ) {
-          controller.color( 255,0,0 );
-      } else {
-          controller.color( 0,0,0 );
-      }
-    } else {
-
-        int part = (subTick - 0.5) * controller.sequence.length;
-        controller.color( controller.sequence.colors[part] );
-
+      controller.tone( TONE_C6, 5 );
     }
+    int part = subTick * controller.sequence.length;
+    controller.color( controller.sequence.colors[part] );
 
-    if ( controller.modeButton.keyPressed() ) {
+    if ( controller.pCancelInput->keyPressed() ) {
         controller.setMode( controller.modeIndex );
         dprintln( "Back" );
     }
     
-    if ( controller.deleteButton.keyPressed() ) {
+    if ( controller.pDeleteInput->keyPressed() ) {
         deleteSequence( controller.sequenceIndex );
         if ( controller.sequenceIndex >= sequenceCount() ) {
             controller.setSequence( 0 );
@@ -218,6 +211,7 @@ void DeleteSequenceMode::display( float subTick )
         digitalWrite( EDIT_LED_PIN, LOW ); // Edit LED off
         controller.setMode( controller.modeIndex );
     }
+
 }
 
 

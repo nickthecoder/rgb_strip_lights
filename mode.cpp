@@ -50,40 +50,94 @@ void SequenceMode::loop()
         //controller.setMode( &staticMode );
     }
 
-    if ( controller.modeButton.keyPressed() ) {
+    if ( controller.pModeInput->keyPressed() ) {
         controller.nextMode();
         dvalue( "Mode ", controller.modeIndex );
         save();
     }
 
-    if ( controller.easeButton.keyPressed() ) {
+    if ( controller.pEaseInput->keyPressed() ) {
         controller.nextEase();
         dvalue( "Ease ", controller.easeIndex );
         save();
     }
 
-    if ( controller.sequenceButton.keyPressed() ) {
+    if ( controller.pSequenceInput->keyPressed() ) {
         controller.nextSequence();
         dvalue( "Sequence ", controller.sequenceIndex );
         save();
     }
-    
-    if ( controller.editButton.keyPressed() ) {
+
+    if ( controller.pEditInput->keyPressed() ) {
         dprintln( "Edit" );
         controller.setMode( &browseMode );
     }
 
-    if ( controller.addButton.keyPressed() ) {
+    if ( controller.pAddInput->keyPressed() ) {
         dprintln( "Add Sequence" );
         controller.setMode( &addSequenceMode );
     }
 
-    if ( controller.deleteButton.keyPressed() ) {
+    if ( controller.pDeleteInput->keyPressed() ) {
         dprintln( "Delete Sequence" );
         controller.setMode( &deleteSequenceMode );
     }
 
-    controller.remote.checkButtons();
+    
+    long button = controller.remote.getButton();
+
+    if ( button == REMOTE_POWER) {
+        controller.showColor( 0x050000 );
+
+    } else if ( button == REMOTE_PAUSE) {
+        if ( controller.pMode == &stayMode ) {
+            controller.setMode( controller.modeIndex );
+        } else {
+            controller.setMode( &stayMode );
+        }
+
+    } else if ( button == REMOTE_RED ) {
+        controller.showColor( 0xff0000 );
+    } else if ( button == REMOTE_GREEN ) {
+        controller.showColor( 0x00ff00 );
+    } else if ( button == REMOTE_BLUE ) {
+        controller.showColor( 0x0000ff );
+    } else if ( button == REMOTE_WHITE ) {
+        controller.showColor( 0xffffff );
+    } else if ( button == REMOTE_ORANGE ) {
+        controller.showColor( 0xff6600 );
+    } else if ( button == REMOTE_LGREEN ) {
+        controller.showColor( 0xb4ff00 );
+    } else if ( button == REMOTE_LBLUE ) {
+        controller.showColor( 0x0093ff );
+    } else if ( button == REMOTE_PINK ) {
+        controller.showColor( 0xf9a860 );
+    } else if ( button == REMOTE_ORANGE2 ) {
+        controller.showColor( 0xffd800 );
+    } else if ( button == REMOTE_CYAN ) {
+        controller.showColor( 0x00ffff );
+    } else if ( button == REMOTE_PURPLE ) {
+        controller.showColor( 0x6700ff );
+    } else if ( button == REMOTE_PINK2 ) {
+        controller.showColor( 0xf9a8b0 );
+    } else if ( button == REMOTE_ORANGE3 ) {
+        controller.showColor( 0xffd24a );
+    } else if ( button == REMOTE_TEAL ) {
+        controller.showColor( 0x4393ba );
+    } else if ( button == REMOTE_AUBERGINE ) {
+        controller.showColor( 0xa923c5 );
+    } else if ( button == REMOTE_PALE_BLUE ) {
+        controller.showColor( 0xa1c6ff );
+    } else if ( button == REMOTE_YELLOW ) {
+        controller.showColor( 0xffff00 );
+    } else if ( button == REMOTE_TEAL2 ) {
+        controller.showColor( 0x3b5e72 );
+    } else if ( button == REMOTE_MAUVE ) {
+        controller.showColor( 0xf310b4 );
+    } else if ( button == REMOTE_PALE_BLUE2 ) {
+        controller.showColor( 0xa1c6ff );
+    }
+  
 }
 
 void SequenceMode::nextTick()

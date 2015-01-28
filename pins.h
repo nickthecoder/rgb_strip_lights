@@ -20,7 +20,9 @@
 #define EASE_PIN      12
 
 // Buzzer
-//#define BUZZER_PIN    6
+#define BUZZER_PIN    3
+
+// Infra Red Sensor
 #define REMOTE_PIN    11
 
 // Main LED Output

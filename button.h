@@ -2,8 +2,17 @@
 
 #ifndef HEADER_BUTTON
 #define HEADER_BUTTON
-   
-class Button {
+  
+  
+class Input {
+
+  public :
+      virtual boolean keyPressed();
+
+};
+ 
+class Button : public Input
+{
   
   public :
   
@@ -11,7 +20,7 @@ class Button {
 
     boolean raw();           // Return the state of the key without debouncing the result.
     boolean isDown();        // return true iff the button is current down
-    boolean keyPressed();    // return true iff the button has just completed an "up" i.e. is now up, but was down.
+    virtual boolean keyPressed();    // return true iff the button has just completed an "up" i.e. is now up, but was down.
    
   private :
     int pin;                 // The pin number used for the digitalRead
@@ -28,7 +37,32 @@ class Button {
     static int toneFrequency;
 };
 
+class RemoteInput : public Input
+{
+  public :
+    long button;
+    
+  public :
+    RemoteInput( long button );
+    
+  public :
+    virtual boolean keyPressed();
+};
 
+class DualInput : public Input
+{
+
+  public :
+    DualInput( Input* pA, Input* pB );
+
+  public :
+      Input* pA;
+      Input* pB;
+      
+  public :
+      virtual boolean keyPressed();
+
+};
 
 #endif
 

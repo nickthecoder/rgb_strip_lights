@@ -80,23 +80,23 @@ void setup()
 void loop()
 {
     controller.loop();
-    controller.remote.checkButtons();
 }
 
 /*
 Planned Improvements
 
 Use more of the remote control buttons.
-  Pick buttons for next sequence, next mode, next ease (red up, green up, blue up)
-    Maybe also previous sequence, previous mode and previous ease (red down, green down, blue down)
+  Pick buttons for next sequence, next mode, next ease (Jump3 , Flash, Fade7)
+    Jump 7 is previous sequence and Fade3 is previous Ease
     
   DIY 1 : Edit
   DIY 2 : Add
-  DIY 3 : Delete???
+  DIY 3 : Delete
   
   Put back the IR repeat feature, and use it for brightness controls.
   
   Power button resets the sequence, mode and ease to 0
+    Resets speeds to a default too when/if the speeds can be controlled via IR.
   
   Quick/Slow buttons
     Use "Waggle" code and a toggle so that EITHER the dial or a variable is used for the actual speed.
@@ -116,5 +116,8 @@ Use mux/demux to allow the controls to connect to the main box via a cable (cat5
   3 more if I use a cat5 cable to read 6 button states.
   That doesn't include the OLED display though.
   GND, +5, 2 for the display, leaves 4 to mux the pots and buttons.
+  
+Status LED/Buzzer to indicate when buttons have been received.
+
 */
 

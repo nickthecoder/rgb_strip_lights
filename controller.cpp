@@ -34,19 +34,47 @@ int getEaseCount() {
 
 Sequence sequence = Sequence();
 
+Button editButton = Button( EDIT_PIN );
+RemoteInput editRemoteInput = RemoteInput( REMOTE_DIY1 );
+DualInput editInput = DualInput( &editButton, &editRemoteInput );
+
+Button addButton = Button( ADD_PIN );
+RemoteInput addRemoteInput = RemoteInput( REMOTE_DIY2 );
+DualInput addInput = DualInput( &addButton, &addRemoteInput );
+
+Button deleteButton = Button( DELETE_PIN );
+RemoteInput deleteRemoteInput = RemoteInput( REMOTE_DIY3 );
+DualInput deleteInput = DualInput( &deleteButton, &deleteRemoteInput );
+
+Button sequenceButton = Button( SEQUENCE_PIN );
+RemoteInput sequenceRemoteInput = RemoteInput( REMOTE_JUMP7 );
+DualInput sequenceInput = DualInput( &sequenceButton, &sequenceRemoteInput );
+
+Button modeButton = Button( MODE_PIN );
+RemoteInput modeRemoteInput = RemoteInput( REMOTE_FLASH ); 
+DualInput modeInput = DualInput( &modeButton, &modeRemoteInput );
+
+Button easeButton = Button( EASE_PIN );
+RemoteInput easeRemoteInput = RemoteInput( REMOTE_FLASH );
+DualInput easeInput = DualInput( &easeButton, &easeRemoteInput );
+
+RemoteInput powerInput =  RemoteInput( REMOTE_POWER );
+
+DualInput cancelInput = DualInput( &modeInput, &powerInput );
+
 
 Controller::Controller()
-    : modeButton( Button( MODE_PIN ) )
-    , sequenceButton( Button( SEQUENCE_PIN ) )
-    , easeButton( Button( EASE_PIN ) )
-
-    , editButton( Button( EDIT_PIN ) )
-    , addButton( Button( ADD_PIN ) )
-    , deleteButton( Button( DELETE_PIN ) )
-    
-    , remote( Remote( REMOTE_PIN ) )
+    : remote(        Remote( REMOTE_PIN ) )
 {
-
+    pModeInput = &modeInput;
+    pSequenceInput = &sequenceInput;
+    pEaseInput = &easeInput;
+    
+    pAddInput = &addInput;
+    pDeleteInput = &deleteInput;
+    pEditInput = &editInput;
+    pCancelInput = &cancelInput;
+    
     modeIndex = 0;
     easeIndex = 0; //EASE_COUNT - 1;
     sequenceIndex = 0;
@@ -61,9 +89,10 @@ void Controller::setup()
     pinMode( RED_OUT_PIN, OUTPUT );
     pinMode( GREEN_OUT_PIN, OUTPUT );
     pinMode( BLUE_OUT_PIN, OUTPUT );
-    
+    pinMode( BUZZER_PIN, OUTPUT );
+
     remote.setup();
-    
+        
     // pinMode( BUZZER_PIN, OUTPUT );
     
     color( 5, 1, 0 ); // Amber... On your marks...
@@ -146,6 +175,7 @@ void Controller::resetData()
 
 void Controller::loop()
 {
+    remote.loop();
     if (sequenceIndex == sequenceCount() ) {
         sequence.clear().append( getDialColor() );
     }
@@ -153,6 +183,19 @@ void Controller::loop()
     getMode()->loop();
 }
 
+void Controller::showColor( long colorVal )
+{
+    color( colorVal );    
+    controller.setMode( &stayMode );
+}
+
+void Controller::color( long colorVal )
+{
+    byte red = colorVal >> 16;
+    byte green = (colorVal >> 8) & 0xFF;
+    byte blue = colorVal & 0xFF;
+    color( red, green, blue );
+}
 
 void Controller::color( byte* rgb )
 {
@@ -265,5 +308,36 @@ byte* Controller::getDialColor()
 byte Controller::getChannel( int c )
 {
     return analogRead(rgbInPins[c]) / 4;
+}
+
+int toneScale[] = { TONE_C3, TONE_D4, TONE_E4, TONE_F4, TONE_G4, TONE_A5, TONE_B5 };
+
+void Controller::toneIndex( int index, long millis )
+{
+    if ( index < 0 ) {
+        index = 0;
+    }
+    if ( index > 6 ) {
+        index = 6;
+    }
+    tone( toneScale[index], millis );
+}
+
+void Controller::tone( int frequency, long millis )
+{
+    dprintln ("Beep" );
+    
+    int hperiod; //calculate 1/2 period in us
+    long cycles, i;
+    hperiod = (500000 / frequency) - 7; // subtract 7 us to make up for digitalWrite overhead - determined empirically
+    // calculate cycles
+    cycles = ((long)frequency * millis) / 1000; // calculate cycles
+
+    for (i=0; i<= cycles; i++) {
+        digitalWrite( BUZZER_PIN, HIGH);
+        delayMicroseconds(hperiod);
+        digitalWrite( BUZZER_PIN, LOW);
+        delayMicroseconds(hperiod - 1); // - 1 to make up for fractional microsecond in digitaWrite overhead
+    }
 }
 

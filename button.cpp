@@ -1,5 +1,5 @@
 #include "debug.h"
-#include "button.h"
+#include "controller.h"
 
 #define DEBOUNCE_MILLIS 50
 
@@ -66,4 +66,25 @@ boolean Button::keyPressed()
     return false;
 }
 
+
+RemoteInput::RemoteInput( long button )
+{
+    this->button = button;
+}
+
+boolean RemoteInput::keyPressed()
+{
+    return controller.remote.getButton() == button;
+}
+
+DualInput::DualInput( Input* pA, Input* pB )
+{
+    this->pA = pA;
+    this->pB = pB;
+}
+
+boolean DualInput::keyPressed()
+{
+    return pA->keyPressed() || pB->keyPressed();
+}
 
