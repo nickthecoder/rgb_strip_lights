@@ -13,15 +13,11 @@ Fadeout fadeout = Fadeout();
 HeartBeat heartBeat = HeartBeat();
 Whiteout whiteout = Whiteout();
 Twinkle twinkle = Twinkle();
-Twinkle redTwinkle;
-Twinkle greenTwinkle;
-Twinkle blueTwinkle;
-Twinkle whiteTwinkle;
 Alternate alternate = Alternate();
 StaticMode staticMode = StaticMode();
 
 #define MODE_COUNT 11
-Mode* pModes[MODE_COUNT] = { &fade, &heartBeat, &fadeout, &whiteout, &twinkle, &twinkle, &twinkle, &twinkle, &twinkle, &alternate, &staticMode };
+Mode* pModes[MODE_COUNT] = { &fade, &heartBeat, &fadeout, &whiteout, &twinkle, &fade, &fade, &fade, &fade, &alternate, &staticMode };
 int getModeCount() {
     return MODE_COUNT;
 }
@@ -77,16 +73,10 @@ int freeRam()
 Controller::Controller()
     : remote( Remote( REMOTE_PIN ) )
 {
-  
-    whiteTwinkle = Twinkle( F("White Twinkle"), WHITE );
-    redTwinkle = Twinkle( F("Red Twinkle"), RED );
-    greenTwinkle = Twinkle( F("Green Twinkle"), GREEN );
-    blueTwinkle = Twinkle( F("Blue Twinkle"), BLUE );
-
-    pModes[ 5 ] = &whiteTwinkle;
-    pModes[ 6 ] = &redTwinkle;
-    pModes[ 7 ] = &greenTwinkle;
-    pModes[ 8 ] = &blueTwinkle;
+    pModes[ 5 ] = new Twinkle( F("White Twinkle"), WHITE );
+    pModes[ 6 ] = new Twinkle( F("Red Twinkle"), RED );
+    pModes[ 7 ] = new Twinkle( F("Green Twinkle"), GREEN );
+    pModes[ 8 ] = new Twinkle( F("Blue Twinkle"), BLUE );
 
     pModeInput = &modeInput;
     pSequenceInput = &sequenceInput;
