@@ -200,7 +200,7 @@ void EasingSequenceMode::drawScreen()
     u8g.drawStr( 0, 45, controller.getEase()->name );
 
     int duration = getTickDuration();
-    float x = 130.0 - pow( duration, 0.5 );
+    float x = 140.0 - pow( duration, 0.5 );
     if ( x < 0 ) {
       x = 1;
     }

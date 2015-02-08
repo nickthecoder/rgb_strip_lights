@@ -108,9 +108,15 @@ void Periodic::drawScreen()
 {
     EasingSequenceMode::drawScreen();
 
-    u8g.drawStr( 98, 60, F(",") );
-    u8g.setPrintPos( 103, 60 );
-    u8g.print( getPeriod() / 20 );
+    float duration = getPeriod();
+    float x = 128 - ( duration - 60 ) / 8;
+    if ( x < 1 ) {
+      x = 1;
+    }
+    if ( x > 127 ) {
+      x = 127;
+    }
+    u8g.drawBox( 0, 60, (int) x, 3 );
 
 }
 

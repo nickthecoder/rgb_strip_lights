@@ -32,7 +32,7 @@ boolean Waggle::isWaggled()
     }
     
     int diff = maxVal - minVal;
-    if ( diff > threshold ) {
+    if ( diff > threshold ) {        
         reset();
         return true;
     }

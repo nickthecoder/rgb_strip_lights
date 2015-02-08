@@ -253,6 +253,7 @@ void Controller::loop()
         } while( u8g.nextPage() );
         needsRedraw = false;   
 
+        Serial.println( "Redraw" );
         Serial.println( freeRam() );
     }
 }
@@ -396,17 +397,26 @@ void Controller::previousSequence()
 
 Waggle speedWaggle = Waggle( SPEED_PIN );
 
+Waggle twinkleWaggle = Waggle( TWINKLE_PIN );
+
 // Returns a value in ms of the duration of a tick.
 // Range 100..
 long Controller::getTickDuration()
 {
+    if (twinkleWaggle.isWaggled()) {
+        updateScreen();
+    }
+    
     if ( speed <= 0 ) {
         long potValue = 1024 - analogRead( SPEED_PIN );
         long value = 100 + (potValue * potValue) / 50;
-        //dvalue( "Duration ", value );
+        if ( speedWaggle.isWaggled() ) {
+            updateScreen();
+        }
         return value;
     } else {
         if ( speedWaggle.isWaggled() ) {
+            updateScreen();
             speed = -1;
             return getTickDuration();
         }
@@ -421,7 +431,8 @@ void Controller::slowDown()
     }
     
     speed += 1;
-    toneIndex( 15 -(speed % 15) );    
+    toneIndex( 15 -(speed % 15) ); 
+    updateScreen();   
 }
 
 void Controller::speedUp()
@@ -435,6 +446,7 @@ void Controller::speedUp()
         speed = 1;
     }
     toneIndex( 15 - (speed % 15) ); 
+    updateScreen();   
 }
 
 byte tempColor[3];
