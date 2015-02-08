@@ -104,10 +104,16 @@ int Periodic::getPeriod()
     return value;
 }
 
-Twinkle::Twinkle( byte* pColor )
+void Periodic::drawScreen()
 {
-    this->pColor = pColor;
+    EasingSequenceMode::drawScreen();
+
+    u8g.drawStr( 98, 60, F(",") );
+    u8g.setPrintPos( 103, 60 );
+    u8g.print( getPeriod() / 20 );
+
 }
+
 
 void Twinkle::displaySubPeriod( float subPeriod )
 {

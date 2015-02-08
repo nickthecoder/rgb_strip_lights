@@ -12,16 +12,16 @@ Fade fade = Fade();
 Fadeout fadeout = Fadeout();
 HeartBeat heartBeat = HeartBeat();
 Whiteout whiteout = Whiteout();
-Twinkle twinkle = Twinkle( BLACK );
-Twinkle whiteTwinkle = Twinkle( WHITE );
-Twinkle redTwinkle = Twinkle( RED );
-Twinkle greenTwinkle = Twinkle( GREEN );
-Twinkle blueTwinkle = Twinkle(  BLUE );
+Twinkle twinkle = Twinkle();
+Twinkle redTwinkle;
+Twinkle greenTwinkle;
+Twinkle blueTwinkle;
+Twinkle whiteTwinkle;
 Alternate alternate = Alternate();
 StaticMode staticMode = StaticMode();
 
 #define MODE_COUNT 11
-Mode* pModes[MODE_COUNT] = { &fade, &heartBeat, &fadeout, &whiteout, &twinkle, &whiteTwinkle, &redTwinkle, &greenTwinkle, &blueTwinkle, &alternate, &staticMode };
+Mode* pModes[MODE_COUNT] = { &fade, &heartBeat, &fadeout, &whiteout, &twinkle, &twinkle, &twinkle, &twinkle, &twinkle, &alternate, &staticMode };
 int getModeCount() {
     return MODE_COUNT;
 }
@@ -64,10 +64,30 @@ RemoteInput powerInput =  RemoteInput( REMOTE_POWER );
 
 DualInput cancelInput = DualInput( &modeInput, &powerInput );
 
+U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NO_ACK);
+
+
+int freeRam()
+{
+    extern int __heap_start, *__brkval;
+    int v;
+    return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
+}
 
 Controller::Controller()
-    : remote(        Remote( REMOTE_PIN ) )
+    : remote( Remote( REMOTE_PIN ) )
 {
+  
+    whiteTwinkle = Twinkle( F("White Twinkle"), WHITE );
+    redTwinkle = Twinkle( F("Red Twinkle"), RED );
+    greenTwinkle = Twinkle( F("Green Twinkle"), GREEN );
+    blueTwinkle = Twinkle( F("Blue Twinkle"), BLUE );
+
+    pModes[ 5 ] = &whiteTwinkle;
+    pModes[ 6 ] = &redTwinkle;
+    pModes[ 7 ] = &greenTwinkle;
+    pModes[ 8 ] = &blueTwinkle;
+
     pModeInput = &modeInput;
     pSequenceInput = &sequenceInput;
     pPreviousSequenceInput = &previousSequenceInput;
@@ -97,6 +117,10 @@ void Controller::setup()
     pinMode( GREEN_OUT_PIN, OUTPUT );
     pinMode( BLUE_OUT_PIN, OUTPUT );
     pinMode( BUZZER_PIN, OUTPUT );
+
+    u8g.setColorIndex(1);         // pixel on
+    needsRedraw = true;
+    u8g.setFont(u8g_font_unifont);
 
     remote.setup();
         
@@ -219,8 +243,21 @@ void Controller::loop()
     }
 
     getMode()->loop();
+    
+    // Rredraw the OLED screen if needed.
+    // This is SLOW (up to 0.25 seconds), so only do it when needed
+    if (needsRedraw) {
+        u8g.firstPage();  
+        do {
+            pMode->drawScreen();
+        } while( u8g.nextPage() );
+        needsRedraw = false;   
+
+        Serial.println( freeRam() );
+    }
 }
 
+    
 void Controller::showColor( long colorVal )
 {
     color( colorVal );    
@@ -259,6 +296,7 @@ void Controller::setMode( Mode* pMode )
 {
     this->pMode = pMode;
     this->pMode->begin();
+    needsRedraw = true;
 }
 
 void Controller::setMode( int modeIndex )
@@ -287,6 +325,7 @@ Mode* Controller::getMode()
 void Controller::setEase( int index )
 {
     easeIndex = index;
+    needsRedraw = true;
 }
 
 void Controller::nextEase()
@@ -295,7 +334,9 @@ void Controller::nextEase()
     if ( easeIndex >= EASE_COUNT ) {
         easeIndex = 0;
     }
+ 
     toneIndex( easeIndex );
+    needsRedraw = true;
     dvalue( "Ease ", easeIndex );
 
 }
@@ -307,6 +348,7 @@ void Controller::previousEase()
         easeIndex = EASE_COUNT - 1;
     }
     toneIndex( easeIndex );
+    needsRedraw = true;
     dvalue( "Ease ", easeIndex );
 
 }
@@ -322,6 +364,7 @@ void Controller::setSequence( int index )
     sequenceIndex = index;
     
     loadSequence( sequenceIndex );
+    needsRedraw = true;
 }
 
 void Controller::nextSequence()
@@ -353,6 +396,8 @@ void Controller::previousSequence()
 
 Waggle speedWaggle = Waggle( SPEED_PIN );
 
+// Returns a value in ms of the duration of a tick.
+// Range 100..
 long Controller::getTickDuration()
 {
     if ( speed <= 0 ) {
@@ -443,4 +488,10 @@ void Controller::beep()
 {
     tone( TONE_C6, 50 );
 }
+
+void Controller::updateScreen()
+{
+    needsRedraw = true;
+}
+
 

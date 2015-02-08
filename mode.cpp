@@ -30,6 +30,11 @@ void Mode::loop()
     display( subTicks );
 }
 
+void Mode::drawScreen()
+{
+    u8g.drawStr( 0, 14, name );
+}
+
 
 void SequenceMode::begin()
 {
@@ -177,6 +182,34 @@ long SequenceMode::getTickDuration()
     return controller.getTickDuration();
 }
 
+void SequenceMode::drawScreen()
+{
+    Mode::drawScreen();
+    
+    u8g.drawStr( 0, 30, F("Sequence") );
+    u8g.setPrintPos( 80,30 );
+    u8g.print( controller.sequenceIndex + 1 );
+    u8g.print( "/" );
+    u8g.print( sequenceCount() );
+}
+
+void EasingSequenceMode::drawScreen()
+{
+    SequenceMode::drawScreen();
+    
+    u8g.drawStr( 0, 45, controller.getEase()->name );
+
+    int duration = getTickDuration();
+    float x = 130.0 - pow( duration, 0.5 );
+    if ( x < 0 ) {
+      x = 1;
+    }
+    if ( x > 127 ) {
+      x = 127;
+    }
+    u8g.drawBox( 0, 54, (int) x, 3 );
+}
+
 
 OffMode offMode = OffMode();
 
@@ -187,6 +220,7 @@ void OffMode::loop()
         controller.reset();
     }
 }
+
 void OffMode::display(float)
 {
 }

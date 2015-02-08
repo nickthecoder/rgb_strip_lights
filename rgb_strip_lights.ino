@@ -59,7 +59,29 @@
  *   Press the "DELETE" button again to confirm,
  *   Or press "MODE" button to cancel.
  *
+ * Remote Control Keys :
+ * DIY1 : Edit
+ * DIY2 : Add
+ * DIY3 : Delete
+ * FLASH: Next Mode
+ * Jump3: Previous Sequence
+ * Jump7: Next Sequence
+ * Fade3: Previous Ease
+ * Fade7: Next Ease
+ * POWER: Low light/Reset/Cancel
+ 
+ * The following buttons are not currently used
+ 
+ * AUTO:     (could be a demo mode, which picks random settings every now and then)
+ * DIY4 :    (could be twinkle down)
+ * DIY5 :    (could be twinkle up)
+ * DIY6 :    (could be previous mode)
+ * Colour Up/Down arrows: (could Choose custom colours instead of using the dials)
+ *
+ * All of the other buttons should be obbvious.
  */
+
+#include <U8glib.h>
 
 #include <EEPROM.h>
 #include "debug.h"
@@ -85,9 +107,10 @@ void loop()
 /*
 Planned Improvements
 
-Use more of the remote control buttons.
-  previousMode isn't mapped yet.
+previousMode isn't on remote control yet. DIY6 ? (left of flash).
   
+Add twinkle speed on remote control DIY4/5 = up/down.
+
 Demo mode - picks a random sequence, mode and ease every N seconds.
   "Auto" button on the remote.
 

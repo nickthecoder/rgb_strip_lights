@@ -1,14 +1,15 @@
+
 #include <Arduino.h>
 
 // Dials for choosing a colour
-#define RED_IN_PIN    A0
+#define RED_IN_PIN    A2
 #define GREEN_IN_PIN  A1
-#define BLUE_IN_PIN   A2
+#define BLUE_IN_PIN   A0
 
 // RGB dials have a dual purpose
-#define WAGGLE_PIN    A0
+#define WAGGLE_PIN    A2
 #define TWINKLE_PIN   A1
-#define SPEED_PIN     A2
+#define SPEED_PIN     A0
 
 // Buttons
 #define EDIT_PIN      2
@@ -32,4 +33,8 @@
 
 // Indicator light, used during testing, and may be using in the final product.
 #define EDIT_LED_PIN  13
+
+// OLED display using I2C interface - NB, these are HARDCODED to these pins, and cannot be changed
+#define I2C_SCL       A5
+#define I2c_SDA       A4
 

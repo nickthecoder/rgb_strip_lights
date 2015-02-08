@@ -1,6 +1,8 @@
 #ifndef HEADER_CONTROLLER
 #define HEADER_CONTROLLER
 
+#include <U8glib.h>
+
 #include "debug.h"
 #include "pins.h"
 #include "button.h"
@@ -15,6 +17,8 @@
 
 extern int getEaseCount();
 extern int getModeCount();
+
+extern U8GLIB_SSD1306_128X64 u8g;
 
 class Controller
 {
@@ -40,6 +44,7 @@ class Controller
     Remote remote;
 
     float brightness; // (0..1);
+    boolean needsRedraw;
 
   public :
     Controller();
@@ -82,6 +87,7 @@ class Controller
     void tone( int frequency, long millis = 100 );
     void toneIndex( int index, long millis = 100 );
     void beep();
+    void updateScreen();
     
   private :
     void resetData();
