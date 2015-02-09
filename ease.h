@@ -36,12 +36,14 @@ class EaseInQuad : public Ease {
 };
 extern EaseInQuad easeInQuad;
 
+/*
 class EaseInCubic : public Ease {
   public :
     EaseInCubic() : Ease( F("Ease-In-Cubic") ) {};
     virtual float ease( float from );
 };
 extern EaseInCubic easeInCubic;
+*/
 
 class EaseInQuart : public Ease {
   public :

@@ -204,6 +204,7 @@ void saveSequence( int index, Sequence* pSequence )
 
 void loadSequence( int index )
 {
+    dprintln( "LoadSeq" );
     int location =  getSequenceStart( index );
 
     controller.sequence.clear();
@@ -211,7 +212,13 @@ void loadSequence( int index )
     seek( location );
     int count = readByte();
     for ( int i = 0; i < count; i ++ ) {
-        controller.sequence.a( readByte(), readByte(), readByte() );
+        byte r = readByte();
+        byte g = readByte();
+        byte b = readByte();
+        controller.sequence.a( r, g, b );
+        dvalue( "r", r );
+        dvalue( "g", g );
+        dvalue( "b", b );
     }
 }
 

@@ -25,15 +25,25 @@ class Mode {
 
 };
 
+class PlainMode : public Mode
+{
+  public :
+    PlainMode( const __FlashStringHelper *name ) : Mode( name ) {};
 
-class SequenceMode : public Mode
+    virtual void loop();
+    virtual long getTickDuration() { return 0; };
+    virtual void nextTick() {};
+  
+};
+
+class SequenceMode : public PlainMode
 {
   public :
     int colorIndex;
     int previousColorIndex;
     
   public :
-    SequenceMode( const __FlashStringHelper *name ) : Mode( name ) {};
+    SequenceMode( const __FlashStringHelper *name ) : PlainMode( name ) {};
   
     virtual void begin();
     virtual void loop();
@@ -53,6 +63,8 @@ class EasingSequenceMode : public SequenceMode
 {
   public :
     EasingSequenceMode( const __FlashStringHelper *name ) : SequenceMode( name ) {};
+
+    virtual void loop();
     virtual void drawScreen();
 };
 

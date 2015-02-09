@@ -20,11 +20,13 @@ float EaseInQuad::ease( float from )
 }
 EaseInQuad easeInQuad = EaseInQuad();
 
+/*
 float EaseInCubic::ease( float from )
 {
     return from * from * from;
 }
 EaseInCubic easeInCubic = EaseInCubic();
+*/
 
 float EaseInQuart::ease( float from )
 {
@@ -40,11 +42,13 @@ float EaseOutQuad::ease( float from )
 }
 EaseOutQuad easeOutQuad = EaseOutQuad();
 
+/*
 float EaseOutCubic::ease( float from )
 {
     return 1 - easeInCubic.ease(1-from);
 }
 EaseOutCubic easeOutCubic = EaseOutCubic();
+*/
 
 float EaseOutQuart::ease( float from )
 {

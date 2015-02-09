@@ -26,10 +26,10 @@ class Whiteout : public EasingSequenceMode
     virtual void display( float subTick );
 };
 
-class HeartBeat : public EasingSequenceMode
+class HeartBeat : public SequenceMode
 {
   public :
-    HeartBeat() : EasingSequenceMode( F("Heartbeat") ) {};
+    HeartBeat() : SequenceMode( F("Heartbeat") ) {};
     virtual void display( float subTick );
 };
 
@@ -54,13 +54,8 @@ class Periodic : public EasingSequenceMode
 class Twinkle : public Periodic
 {
   public :
-    Twinkle() : Periodic( F("Twinkle") ) { this->pColor = BLACK; };
-    Twinkle( const __FlashStringHelper *name, byte* pColor ) : Periodic( name ) { this->pColor = pColor; };
-
+    Twinkle() : Periodic( F("Twinkle") ) {};
     virtual void displaySubPeriod( float subPeriod );
-    
-  public :
-    byte* pColor;
 };
 
 class Alternate : public Periodic
@@ -68,23 +63,38 @@ class Alternate : public Periodic
   public :
     Alternate() : Periodic( F("Alternate") ) {};
     virtual void displaySubPeriod( float subPeriod );
-    
 };
 
-class StaticMode : public SequenceMode
+class AlternateLast : public Periodic
 {
   public :
-    StaticMode() : SequenceMode( F("Dial-a-colour") ) {};
+    AlternateLast() : Periodic( F("Alternate Last") ) {};
+    virtual void displaySubPeriod( float subPeriod );
+    virtual void nextTick();    
+};
+
+class StaticMode : public PlainMode
+{
+  public :
+    StaticMode() : PlainMode( F("Dial-a-colour") ) {};
     virtual void display( float subTick );
 };
 
-class StayMode : public SequenceMode
+class StayMode : public PlainMode
 {
   public :
-    StayMode() : SequenceMode( F("Remote Pick") ) {};
-    virtual void display( float subTick );
+    StayMode() : PlainMode( F("Remote Pick") ) {};
+    virtual void display( float subTick ) {};
 };
 extern StayMode stayMode;
+
+class PauseMode : public PlainMode
+{
+  public :
+    PauseMode() : PlainMode( F("Pause") ) {};
+    virtual void display( float subTick ) {};
+};
+extern PauseMode pauseMode;
 
 
 

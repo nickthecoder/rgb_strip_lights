@@ -33,6 +33,7 @@ void Mode::loop()
 void Mode::drawScreen()
 {
     u8g.drawStr( 0, 14, name );
+    u8g.drawBox( 0, 15, controller.brightness * 128, 1 );
 }
 
 
@@ -45,32 +46,14 @@ void SequenceMode::begin()
     previousColorIndex = controller.sequence.length - 1;
 }
 
-void SequenceMode::loop()
+void PlainMode::loop()
 {
     Mode::loop();
-    
+
     // We can wiggle the "green" dial to switch to the "static" mode, where the RGB dials control the LEDs.
     if ( waggle.isWaggled() ) {
         //dpringln( "Waggled" );
         //controller.setMode( &staticMode );
-    }
-
-    if ( controller.pModeInput->keyPressed() ) {
-        controller.nextMode();
-        dvalue( "Mode ", controller.modeIndex );
-        save();
-    }
-
-    if ( controller.pEaseInput->keyPressed() ) {
-        controller.nextEase();
-        dvalue( "Ease ", controller.easeIndex );
-        save();
-    }
-
-    if ( controller.pPreviousEaseInput->keyPressed() ) {
-        controller.previousEase();
-        dvalue( "Ease ", controller.easeIndex );
-        save();
     }
 
     if ( controller.pSequenceInput->keyPressed() ) {
@@ -84,20 +67,17 @@ void SequenceMode::loop()
         dvalue( "Sequence ", controller.sequenceIndex );
         save();
     }
-
-    if ( controller.pEditInput->keyPressed() ) {
-        dprintln( "Edit" );
-        controller.setMode( &browseMode );
+    
+    if ( controller.pModeInput->keyPressed() ) {
+        controller.nextMode();
+        dvalue( "Mode ", controller.modeIndex );
+        save();
     }
+
 
     if ( controller.pAddInput->keyPressed() ) {
         dprintln( "Add Sequence" );
         controller.setMode( &addSequenceMode );
-    }
-
-    if ( controller.pDeleteInput->keyPressed() ) {
-        dprintln( "Delete Sequence" );
-        controller.setMode( &deleteSequenceMode );
     }
 
     
@@ -108,10 +88,10 @@ void SequenceMode::loop()
         controller.setMode( &offMode );
 
     } else if ( button == REMOTE_PAUSE) {
-        if ( controller.pMode == &stayMode ) {
+        if ( controller.pMode == &pauseMode ) {
             controller.setMode( controller.modeIndex );
         } else {
-            controller.setMode( &stayMode );
+            controller.setMode( &pauseMode );
         }
 
     } else if ( button == REMOTE_RED ) {
@@ -155,7 +135,22 @@ void SequenceMode::loop()
     } else if ( button == REMOTE_PALE_BLUE2 ) {
         controller.showColor( 0xa1c6ff );
     }
+}
+
+void SequenceMode::loop()
+{
+    PlainMode::loop();
+
+    if ( controller.pEditInput->keyPressed() ) {
+        dprintln( "Edit" );
+        controller.setMode( &browseMode );
+    }
   
+    if ( controller.pDeleteInput->keyPressed() ) {
+        dprintln( "Delete Sequence" );
+        controller.setMode( &deleteSequenceMode );
+    }
+
 }
 
 void SequenceMode::nextTick()
@@ -191,6 +186,24 @@ void SequenceMode::drawScreen()
     u8g.print( controller.sequenceIndex + 1 );
     u8g.print( "/" );
     u8g.print( sequenceCount() );
+}
+
+
+void EasingSequenceMode::loop()
+{
+    SequenceMode::loop();
+    
+    if ( controller.pEaseInput->keyPressed() ) {
+        controller.nextEase();
+        dvalue( "Ease ", controller.easeIndex );
+        save();
+    }
+
+    if ( controller.pPreviousEaseInput->keyPressed() ) {
+        controller.previousEase();
+        dvalue( "Ease ", controller.easeIndex );
+        save();
+    }
 }
 
 void EasingSequenceMode::drawScreen()

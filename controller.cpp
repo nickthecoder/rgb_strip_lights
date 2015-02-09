@@ -14,16 +14,17 @@ HeartBeat heartBeat = HeartBeat();
 Whiteout whiteout = Whiteout();
 Twinkle twinkle = Twinkle();
 Alternate alternate = Alternate();
+AlternateLast alternateLast = AlternateLast();
 StaticMode staticMode = StaticMode();
 
-#define MODE_COUNT 11
-Mode* pModes[MODE_COUNT] = { &fade, &heartBeat, &fadeout, &whiteout, &twinkle, &fade, &fade, &fade, &fade, &alternate, &staticMode };
+#define MODE_COUNT 8
+Mode* pModes[MODE_COUNT] = { &fade, &heartBeat, &fadeout, &whiteout, &twinkle, &alternate, &alternateLast, &staticMode };
 int getModeCount() {
     return MODE_COUNT;
 }
 
-#define EASE_COUNT 8
-Ease* pEases[EASE_COUNT] = {  &jump, &linear, &easeInQuad, &easeOutQuad, &easeInCubic, &easeOutCubic, &easeInQuart,  &easeOutQuart };
+#define EASE_COUNT 6
+Ease* pEases[EASE_COUNT] = {  &jump, &linear, &easeInQuad, &easeOutQuad, &easeInQuart,  &easeOutQuart };
 int getEaseCount() {
     return EASE_COUNT;
 }
@@ -73,11 +74,6 @@ int freeRam()
 Controller::Controller()
     : remote( Remote( REMOTE_PIN ) )
 {
-    pModes[ 5 ] = new Twinkle( F("White Twinkle"), WHITE );
-    pModes[ 6 ] = new Twinkle( F("Red Twinkle"), RED );
-    pModes[ 7 ] = new Twinkle( F("Green Twinkle"), GREEN );
-    pModes[ 8 ] = new Twinkle( F("Blue Twinkle"), BLUE );
-
     pModeInput = &modeInput;
     pSequenceInput = &sequenceInput;
     pPreviousSequenceInput = &previousSequenceInput;
@@ -210,6 +206,7 @@ void Controller::loop()
             brightness = 1;
         }
         toneIndex( brightness * 10 );
+        updateScreen();
     }
     if ( button == REMOTE_BRIGHTNESS_DOWN ) {
         brightness -= 0.1;
@@ -217,6 +214,7 @@ void Controller::loop()
             brightness = 0;
         }
         toneIndex( brightness * 10 );
+        updateScreen();
     }
     
     if ( button == REMOTE_QUICK ) {
@@ -242,9 +240,6 @@ void Controller::loop()
             pMode->drawScreen();
         } while( u8g.nextPage() );
         needsRedraw = false;   
-
-        Serial.println( "Redraw" );
-        Serial.println( freeRam() );
     }
 }
 

@@ -124,9 +124,9 @@ void Periodic::drawScreen()
 void Twinkle::displaySubPeriod( float subPeriod )
 {
     if ( subPeriod < 0.5 ) {
-        merge( pColor, getColor(), EASE( subPeriod * 2 ) );
+        merge( BLACK, getColor(), EASE( subPeriod * 2 ) );
     } else {
-        merge( getColor(), pColor, EASE( (subPeriod - 0.5) * 2) );
+        merge( getColor(), BLACK, EASE( (subPeriod - 0.5) * 2) );
     }
 }
 
@@ -140,14 +140,36 @@ void Alternate::displaySubPeriod( float subPeriod )
     }
 }
 
+byte* getLastColor()
+{
+    return controller.sequence.colors[ controller.sequence.length - 1 ];
+}
+
+void AlternateLast::displaySubPeriod( float subPeriod )
+{
+    if (subPeriod < 0.5) {
+        merge( getLastColor(), getColor(), EASE( subPeriod * 2 ) );
+    } else {
+
+        merge( getColor(), getLastColor(), EASE( (subPeriod - 0.5) * 2) );
+    }
+}
+
+void AlternateLast::nextTick()
+{
+    Periodic::nextTick();
+    if (colorIndex >= controller.sequence.length - 1) {
+        colorIndex = 0;
+    }
+}
+
 void StaticMode::display( float subPeriod )
 {
     color( controller.getDialColor() );
 }
 
-void StayMode::display( float subPeriod )
-{
-}
+
 StayMode stayMode = StayMode();
+PauseMode pauseMode = PauseMode();
 
 
