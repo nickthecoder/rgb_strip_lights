@@ -94,13 +94,13 @@ void Periodic::display( float subTicks )
     }
     
     float subPeriod = ((float) (now - lastTime)) / period;
-    displaySubPeriod( controller.getEase()->ease( subPeriod ) );
+    displaySubPeriod( subPeriod );
 }
 
 int Periodic::getPeriod()
 {
-    long potValue = (1024 - analogRead( TWINKLE_PIN ));
-    long value = 60 + (potValue);
+    long potValue = (1024 - analogRead( TWINKLE_PIN ) );
+    long value = 60 + potValue * 4;
     return value;
 }
 
@@ -109,7 +109,7 @@ void Periodic::drawScreen()
     EasingSequenceMode::drawScreen();
 
     float duration = getPeriod();
-    float x = 128 - ( duration - 60 ) / 8;
+    float x = 128 - ( duration - 60 ) / 32;
     if ( x < 1 ) {
       x = 1;
     }
@@ -117,16 +117,15 @@ void Periodic::drawScreen()
       x = 127;
     }
     u8g.drawBox( 0, 60, (int) x, 3 );
-
 }
 
 
 void Twinkle::displaySubPeriod( float subPeriod )
 {
     if ( subPeriod < 0.5 ) {
-        merge( BLACK, getColor(), EASE( subPeriod * 2 ) );
+        merge( BLACK, getColor(), EASE( subPeriod * 2.0 ) );
     } else {
-        merge( getColor(), BLACK, EASE( (subPeriod - 0.5) * 2) );
+        merge( BLACK, getColor(), EASE( (1-subPeriod) * 2.0) );
     }
 }
 
@@ -136,7 +135,7 @@ void Alternate::displaySubPeriod( float subPeriod )
     if (subPeriod < 0.5) {
         merge( getPreviousColor(), getColor(), EASE( subPeriod * 2 ) );
     } else {
-        merge( getColor(), getPreviousColor(), EASE( (subPeriod - 0.5) * 2) );
+        merge( getPreviousColor(), getColor(), EASE( (1 - subPeriod) * 2) );
     }
 }
 
@@ -151,7 +150,7 @@ void AlternateLast::displaySubPeriod( float subPeriod )
         merge( getLastColor(), getColor(), EASE( subPeriod * 2 ) );
     } else {
 
-        merge( getColor(), getLastColor(), EASE( (subPeriod - 0.5) * 2) );
+        merge( getLastColor(), getColor(), EASE( (1 - subPeriod) * 2) );
     }
 }
 

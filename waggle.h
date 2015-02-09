@@ -11,7 +11,7 @@ class Waggle
 {
 
   public :
-    Waggle( int pin, int period = 100, int threshold = 20 );
+    Waggle( int pin, int period = 100, int threshold = 40 );
     
     boolean isWaggled();
     void reset();
