@@ -67,11 +67,19 @@ void Sequence::add( int afterIndex, byte rgb[] )
 
 void Sequence::deleteColor( int index )
 {
-    for ( int i = length-1; i > index; i -- ) {
+    length --;
+    for ( int i = index; i < length; i ++ ) {
        for ( int c = 0; c < 3; c ++ ) {
-            colors[i - 1][c] = colors[i][c];
+            colors[i][c] = colors[i+1][c];
         }
     }
-    length --;
+    /* DEBUG INFO
+    for ( int i = 0; i < length; i ++ ) {
+       for ( int c = 0; c < 3; c ++ ) {
+          Serial.print( colors[i][c] ); Serial.print( " " );
+      }
+      Serial.println();
+    }
+    */
 }
 
