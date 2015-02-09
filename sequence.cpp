@@ -26,6 +26,15 @@ Sequence& Sequence::a( byte r, byte g, byte b )
     return *this;
 }
 
+Sequence& Sequence::a( long colorVal )
+{
+    byte red = colorVal >> 16;
+    byte green = (colorVal >> 8) & 0xFF;
+    byte blue = colorVal & 0xFF;
+    return a(red, green, blue );
+}
+
+
 void Sequence::setColor( int index, byte rgb[] )
 {
    for ( int c = 0; c < 3; c ++ ) {

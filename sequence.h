@@ -29,6 +29,7 @@ class Sequence
     
     Sequence& clear();
     Sequence& a( byte r, byte g, byte b );    
+    Sequence& a( long rgb );    
 };
 
 

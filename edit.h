@@ -8,6 +8,7 @@ class SpecialMode : public Mode
 
     virtual long getTickDuration();
     virtual void nextTick();
+    virtual void drawScreen();
 
 };
 
@@ -24,6 +25,7 @@ class BrowseMode : public SpecialMode
     virtual void end();
 
     virtual void display( float subTicks );
+    virtual void drawScreen();
 
 };
 extern BrowseMode browseMode;
@@ -36,6 +38,7 @@ class EditMode : public SpecialMode
     EditMode() : SpecialMode( F("Edit Colour") ) {};
 
     virtual void display( float subTicks );
+    virtual void drawScreen();
 };
 extern EditMode editMode;
 
@@ -46,6 +49,7 @@ class AddMode : public SpecialMode
     AddMode() : SpecialMode( F("Add Colour") ) {};
 
     virtual void display( float subTicks );
+    virtual void drawScreen();
 };
 extern AddMode addMode;
 
@@ -56,6 +60,7 @@ class DeleteMode : public SpecialMode
     DeleteMode() : SpecialMode( F("Delete Colour") ) {};
 
     virtual void display( float subTicks );
+    virtual void drawScreen();
 };
 extern DeleteMode deleteMode;
 
@@ -67,6 +72,7 @@ class AddSequenceMode : public SpecialMode
     AddSequenceMode() : SpecialMode( F("Add Sequence") ) {};
 
     virtual void display( float subTicks );
+    virtual void drawScreen();
 };
 extern AddSequenceMode addSequenceMode;
 
@@ -77,6 +83,7 @@ class DeleteSequenceMode : public SpecialMode
     DeleteSequenceMode() : SpecialMode( F("Delete Sequence") ) {};
 
     virtual void display( float subTicks );
+    virtual void drawScreen();
 };
 extern DeleteSequenceMode deleteSequenceMode;
 

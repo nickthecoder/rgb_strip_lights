@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 // **** Use to turn debugging on/off
-#define DEBUG
+//#define DEBUG
 
 #ifdef DEBUG
   #define dprint(x)    Serial.print (x); Serial.flush()

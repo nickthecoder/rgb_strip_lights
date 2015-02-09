@@ -15,6 +15,12 @@ void SpecialMode::nextTick()
     // Do nothing!
 }
 
+void SpecialMode::drawScreen()
+{
+    Mode::drawScreen();
+    u8g.drawStr( 0, 30, F("MODE: exit") );
+}
+
 
 
 BrowseMode browseMode = BrowseMode();
@@ -77,6 +83,14 @@ void BrowseMode::display( float subTick )
     controller.color( controller.sequence.colors[ colorIndex ] );
 }
 
+void BrowseMode::drawScreen()
+{
+    SpecialMode::drawScreen();
+
+    u8g.drawStr( 0, 46, F("SEQ: next colour") );    
+    u8g.drawStr( 0, 62, F("EDIT/ADD/DEL") );    
+}
+  
 
 
 EditMode editMode = EditMode();
@@ -101,6 +115,15 @@ void EditMode::display( float subTick )
     }
 }
 
+void EditMode::drawScreen()
+{
+    SpecialMode::drawScreen();
+
+    u8g.drawStr( 0, 46, F("Turn the dials!") );    
+    u8g.drawStr( 0, 62, F("EDIT: save") );    
+}
+  
+
 
 AddMode addMode = AddMode();
 
@@ -112,18 +135,23 @@ void AddMode::display( float subTick )
 
     if ( controller.pCancelInput->keyPressed() ) {
         controller.setMode( &browseMode );
-        dprintln( "Back" );
     }
     
     if ( controller.pAddInput->keyPressed() ) {
         controller.sequence.add( browseMode.colorIndex, controller.getDialColor() );
         saveSequence( controller.sequenceIndex, &controller.sequence );
-        dprintln( "Saved" );
         
         controller.setMode( &browseMode );
     }
 }
 
+void AddMode::drawScreen()
+{
+    SpecialMode::drawScreen();
+
+    u8g.drawStr( 0, 46, F("Turn the dials!") );    
+    u8g.drawStr( 0, 62, F("ADD: save") );    
+}
 
 DeleteMode deleteMode = DeleteMode();
 
@@ -140,7 +168,6 @@ void DeleteMode::display( float subTick )
 
     if ( controller.pCancelInput->keyPressed() ) {
         controller.setMode( &browseMode );
-        dprintln( "Back" );
     }
     
     if ( controller.pDeleteInput->keyPressed() ) {
@@ -149,10 +176,16 @@ void DeleteMode::display( float subTick )
             browseMode.colorIndex = 0;
         }
         saveSequence( controller.sequenceIndex, &controller.sequence );
-        dprintln( "Saved" );
         
         controller.setMode( &browseMode );
     }
+}
+
+void DeleteMode::drawScreen()
+{
+    SpecialMode::drawScreen();
+
+    u8g.drawStr( 0, 62, F("DEL: Delete") );
 }
 
 
@@ -166,14 +199,12 @@ void AddSequenceMode::display( float subTick )
 
     if ( controller.pCancelInput->keyPressed() ) {
         controller.setMode( controller.modeIndex );
-        dprintln( "Back" );
     }
     
     if ( controller.pAddInput->keyPressed() ) {
         controller.sequence.clear();
         controller.sequence.append( controller.getDialColor() );
         saveSequence( sequenceCount(), &controller.sequence );
-        dprintln( "Saved" );
         
         browseMode.begin();
         controller.setMode( &browseMode );
@@ -181,7 +212,13 @@ void AddSequenceMode::display( float subTick )
 
 }
 
+void AddSequenceMode::drawScreen()
+{
+    SpecialMode::drawScreen();
 
+    u8g.drawStr( 0, 46, F("Turn the dials!") );
+    u8g.drawStr( 0, 62, F("ADD: Add") );
+}
 
 DeleteSequenceMode deleteSequenceMode = DeleteSequenceMode();
 
@@ -215,4 +252,10 @@ void DeleteSequenceMode::display( float subTick )
 }
 
 
+void DeleteSequenceMode::drawScreen()
+{
+    SpecialMode::drawScreen();
+
+    u8g.drawStr( 0, 62, F("DEL: Delete") );
+}
 

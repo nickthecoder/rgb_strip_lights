@@ -147,49 +147,65 @@ void Controller::resetData()
     save();
     reset();
 
-    sequence.clear().a( 255, 0, 0 ).a( 0, 255, 0 ).a( 0, 0, 255 );
+    sequence.clear().a(0xff0000).a(0x00ff00).a(0x0000ff);
     saveSequence( 0, &sequence );
 
-    sequence.clear().a( 255,0,0 ).a( 255,60,0 ) .a( 255,180,0 ).a( 0,180,0 ).a( 0,180,255 ).a( 0,0,255 ).a( 255,0,255 );
+    sequence.clear().a(0xff0000).a(0xff4400).a(0xffaa00).a(0x00aa00).a(0x00aaff).a(0x0000ff).a(0xff00ff);
     saveSequence( 1, &sequence );
 
-    sequence.clear().a( 0,255,0 ) .a( 255,255,0 ).a( 0,0,255 ).a( 255,0,255 ).a ( 0,255,255 ).a( 255,255,255 ).a( 255,0,0 );
+    sequence.clear().a(0x00ff00).a(0xffff00).a(0x0000ff).a(0xff00ff).a(0x00ffff).a(0xffffff).a(0xff0000);
     saveSequence( 2, &sequence );
 
-    sequence.clear().a(0,0,255).a(255,255,255).a(255,0,0).a(255,255,255);
+    sequence.clear().a(0x0000ff).a(0xffffff).a(0xff0000).a(0xffffff);
     saveSequence( 3, &sequence );
     
-    sequence.clear().a(60,60,255).a(255,255,255);
+    sequence.clear().a(0x4444ff).a(0xffffff);
     saveSequence( 4, &sequence );
 
+    // Shades of red
     sequence.clear();
-    for ( int i = 10; i <= 255; i += 10 ) {
-        sequence.a( i,0,0 );
+    for ( int i = 1; i <= 10; i ++ ) {
+        float v = (float( i * i )) / 100;
+        int c = v * 255;
+        sequence.a( c,0,0 );
     }
-    for ( int i = 255; i > 0; i -= 10 ) {
-        sequence.a( i,0,0 );
+    for ( int i = 9; i > 1; i -- ) {
+        float v = (float( i * i )) / 100;
+        int c = v * 255;
+        sequence.a( c,0,0 );
     }
     saveSequence( 5, &sequence );
     
+    // Shades of green
     sequence.clear();
-    for ( int i = 0; i <= 255; i += 10 ) {
-        sequence.a( 0,i,0 );
+    for ( int i = 1; i <= 10; i ++ ) {
+        float v = (float( i * i )) / 100;
+        int c = v * 255;
+        sequence.a( 0,c,0 );
     }
-    for ( int i = 255; i > 0; i -= 10 ) {
-        sequence.a( 0,i,0 );
+    for ( int i = 9; i > 1; i -- ) {
+        float v = (float( i * i )) / 100;
+        int c = v * 255;
+        sequence.a( 0,c,0 );
     }
     saveSequence( 6, &sequence );
 
+    // Shades of blue
     sequence.clear();
-    for ( int i = 0; i <= 255; i += 10 ) {
-        sequence.a( 0,0,i );
+    for ( int i = 1; i <= 10; i ++ ) {
+        float v = (float( i * i )) / 100;
+        int c = v * 255;
+        sequence.a( 0,0,c );
     }
-    for ( int i = 255; i > 0; i -= 10 ) {
-        sequence.a( 0,0,i );
+    for ( int i = 9; i > 1; i -- ) {
+        float v = (float( i * i )) / 100;
+        int c = v * 255;
+        sequence.a( 0,0,c );
     }
     saveSequence( 7, &sequence );
-     
-    sequence.clear().a( 255,255,255 );
+
+    // White
+    sequence.clear().a( 0xffffff );
     saveSequence( 8, &sequence );
 
     setSequence( 0 );
